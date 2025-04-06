@@ -79,7 +79,10 @@ def main():
 
     # Display final output
     final_output = run_job_and_capture(f"hdfs dfs -cat {job3_out}/part-*")
-    print("Final output:\n", final_output)
+    print(f"Final output:\n{final_output}")
+
+    # Download final output locally
+    run_job(f"hdfs dfs -get {job3_out} ./job3_output")
 
 
 if __name__ == "__main__":

@@ -2,8 +2,8 @@
 import sys
 
 if len(sys.argv) < 2:
-    sys.stderr.write("Usage: job2_mapper.py <peak_hour>\n")
     sys.exit(1)
+
 peak_hour = sys.argv[1]
 
 for line in sys.stdin:
@@ -25,5 +25,4 @@ for line in sys.stdin:
         print(f"IP\t{url}\t{ip}")
 
     except (IndexError, ValueError):
-        # Skip any malformed lines
         continue
