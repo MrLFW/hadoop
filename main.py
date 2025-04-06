@@ -17,17 +17,14 @@ def run_job_and_capture(cmd):
 
 
 def main():
-    # Define HDFS paths
     logs_hdfs = "/user/luke/logs/logs.txt"
     job1_out = "/user/luke/job1_output"
     job2_out = "/user/luke/job2_output"
     job3_out = "/user/luke/job3_output"
 
-    # Remove any previous outputs
     for path in [job1_out, job2_out, job3_out]:
         run_job(f"hdfs dfs -rm -r {path}", allow_fail=True)
 
-    # --- Job 1: Compute counts per hour ---
     job1_cmd = (
         "hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar "
         f"-input {logs_hdfs} -output {job1_out} "
@@ -36,7 +33,6 @@ def main():
     )
     run_job(job1_cmd)
 
-    # Download Job 1 output locally to determine the peak hour
     run_job(f"hdfs dfs -get {job1_out} ./job1_output")
     peak_hour = None
     max_count = -1
@@ -54,12 +50,11 @@ def main():
                 max_count = count
                 peak_hour = hour
     if peak_hour is None:
-        print("Failed to determine peak hour")
-        sys.exit(1)
-    print("Determined peak hour:", peak_hour)
+        print("failed to find peak hour")
+        return
 
-    # --- Job 2: Process logs for the peak hour ---
-    # Job2 mapper will receive the peak hour as its first argument.
+    print("peak hour:", peak_hour)
+
     job2_cmd = (
         "hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar "
         f"-input {logs_hdfs} -output {job2_out} "
@@ -68,7 +63,6 @@ def main():
     )
     run_job(job2_cmd)
 
-    # --- Job 3: Extract the Top 10 URLs ---
     job3_cmd = (
         "hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar "
         f"-input {job2_out} -output {job3_out} "
@@ -77,11 +71,8 @@ def main():
     )
     run_job(job3_cmd)
 
-    # Display final output
     final_output = run_job_and_capture(f"hdfs dfs -cat {job3_out}/part-*")
     print(f"Final output:\n{final_output}")
-
-    # Download final output locally
     run_job(f"hdfs dfs -get {job3_out} ./job3_output")
 
 

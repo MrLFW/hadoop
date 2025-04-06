@@ -6,7 +6,6 @@ for line in sys.stdin:
         line = line.strip()
         parts = line.split("\t")
         url, total, unique = parts
-        total = int(total)
         print(f"{total}\t{url}\t{unique}")
     except Exception:
         continue
