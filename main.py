@@ -31,6 +31,7 @@ def main():
         "-mapper 'python3 job1_mapper.py' -reducer 'python3 job1_reducer.py' "
         "-file job1_mapper.py -file job1_reducer.py"
     )
+
     run_job(job1_cmd)
 
     run_job(f"hdfs dfs -get {job1_out} ./job1_output")
@@ -61,7 +62,6 @@ def main():
         f"-mapper 'python3 job2_mapper.py {peak_hour}' -reducer 'python3 job2_reducer.py' "
         "-file job2_mapper.py -file job2_reducer.py"
     )
-    run_job(job2_cmd)
 
     job3_cmd = (
         "hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar "
@@ -69,6 +69,9 @@ def main():
         "-mapper 'python3 job3_mapper.py' -reducer 'python3 job3_reducer.py' "
         "-file job3_mapper.py -file job3_reducer.py"
     )
+
+    run_job(job2_cmd)
+
     run_job(job3_cmd)
 
     final_output = run_job_and_capture(f"hdfs dfs -cat {job3_out}/part-*")
