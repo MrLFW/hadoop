@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 import sys
 
-count = 0
+data = []
 for line in sys.stdin:
-    line = line.strip()
-    parts = line.split("\t")
-    if len(parts) == 3 and count < 10:
-        total_hits, url, unique = parts
-        print(
-            f"Number of requests: {total_hits}\tURL: {url}\tNumber of unique visitors: {unique}"
-        )
-        count += 1
-    elif count >= 10:
-        break
+    try:
+        url, count, unique_visitors = line.strip().split("\t")
+        data.append((url, int(count), int(unique_visitors)))
+    except Exception:
+        continue
+
+data.sort(key=lambda x: (-x[1], x[0]))
+for url, count, unique_visitors in data[:10]:
+    print(
+        f"Number of requests: {count}\tURL: {url}\tNumber of unique visitors: {unique_visitors}"
+    )

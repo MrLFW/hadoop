@@ -1,28 +1,18 @@
 #!/usr/bin/env python3
 import sys
 
-if len(sys.argv) < 2:
+try:
+    peak = sys.argv[1].strip()
+except Exception:
     sys.exit(1)
-
-peak_hour = sys.argv[1]
 
 for line in sys.stdin:
     try:
-        line = line.strip()
-        if not line:
-            continue
-        timestamp = line.split("[")[1]
-        hour = timestamp.split(":")[1]
-        if hour != peak_hour:  # only prints lines from the peak hour
+        timestamp = line.strip().split("[", 1)[1].split("]", 1)[0].split(":")
+        if timestamp[1] != peak:
             continue
         ip = line.split()[0]
-        request = line.split('"')[1]
-        url = request.split()[1]
-
-        # print for reducer to count hits on each URL
-        print(f"URL\t{url}\t1")
-        # print unique visitors for reducer to count
-        print(f"IP\t{url}\t{ip}")
-
-    except (IndexError, ValueError):
+        req = line.split('"')[1].split()
+        print(f"{req[1]}\t{ip}")
+    except Exception:
         continue

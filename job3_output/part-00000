@@ -1,6 +1,10 @@
-Number of requests: 1	URL: /product/456	Number of unique visitors: 1
-Number of requests: 1	URL: /product/789	Number of unique visitors: 1
-Number of requests: 2	URL: /cart	Number of unique visitors: 2
+Number of requests: 4	URL: /cart	Number of unique visitors: 4
+Number of requests: 4	URL: /checkout	Number of unique visitors: 4
+Number of requests: 4	URL: /home	Number of unique visitors: 3
 Number of requests: 3	URL: /product/123	Number of unique visitors: 2
-Number of requests: 3	URL: /checkout	Number of unique visitors: 2
-Number of requests: 5	URL: /home	Number of unique visitors: 3
+Number of requests: 2	URL: /product/357	Number of unique visitors: 2
+Number of requests: 1	URL: /product/135	Number of unique visitors: 1
+Number of requests: 1	URL: /product/235	Number of unique visitors: 1
+Number of requests: 1	URL: /product/246	Number of unique visitors: 1
+Number of requests: 1	URL: /product/456	Number of unique visitors: 1
+Number of requests: 1	URL: /product/579	Number of unique visitors: 1

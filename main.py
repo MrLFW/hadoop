@@ -76,6 +76,9 @@ def main():
 
     final_output = run_job_and_capture(f"hdfs dfs -cat {job3_out}/part-*")
     print(f"Final output:\n{final_output}")
+
+    run_job(f"hdfs dfs -get {job1_out} ./job1_output")
+    run_job(f"hdfs dfs -get {job2_out} ./job2_output")
     run_job(f"hdfs dfs -get {job3_out} ./job3_output")
 
 
