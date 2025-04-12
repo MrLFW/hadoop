@@ -16,6 +16,15 @@ def run_job_and_capture(cmd):
     return out.decode()
 
 
+def job_cmd(input_path, output_path, mapper, reducer, args=""):
+    return (
+        f"hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar "
+        f"-input {input_path} -output {output_path} "
+        f"-mapper 'python3 {mapper}{args}' -reducer 'python3 {reducer}' "
+        f"-file {mapper} -file {reducer}"
+    )
+
+
 def main():
     logs_hdfs = "/user/luke/logs/logs.txt"
     job1_out = "/user/luke/job1_output"
@@ -25,16 +34,10 @@ def main():
     for path in [job1_out, job2_out, job3_out]:
         run_job(f"hdfs dfs -rm -r {path}", allow_fail=True)
 
-    job1_cmd = (
-        "hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar "
-        f"-input {logs_hdfs} -output {job1_out} "
-        "-mapper 'python3 job1_mapper.py' -reducer 'python3 job1_reducer.py' "
-        "-file job1_mapper.py -file job1_reducer.py"
-    )
-
+    job1_cmd = job_cmd(logs_hdfs, job1_out, "job1_mapper.py", "job1_reducer.py")
     run_job(job1_cmd)
-
     run_job(f"hdfs dfs -get {job1_out} ./job1_output")
+
     peak_hour = None
     max_count = -1
     with open("job1_output/part-00000", "r") as f:
@@ -56,30 +59,27 @@ def main():
 
     print("peak hour:", peak_hour)
 
-    job2_cmd = (
-        "hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar "
-        f"-input {logs_hdfs} -output {job2_out} "
-        f"-mapper 'python3 job2_mapper.py {peak_hour}' -reducer 'python3 job2_reducer.py' "
-        "-file job2_mapper.py -file job2_reducer.py"
+    job2_cmd = job_cmd(
+        logs_hdfs,
+        job2_out,
+        "job2_mapper.py",
+        "job2_reducer.py",
+        f" {peak_hour}",
     )
-
-    job3_cmd = (
-        "hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar "
-        f"-input {job2_out} -output {job3_out} "
-        "-mapper 'python3 job3_mapper.py' -reducer 'python3 job3_reducer.py' "
-        "-file job3_mapper.py -file job3_reducer.py"
-    )
-
     run_job(job2_cmd)
+    run_job(f"hdfs dfs -get {job2_out} ./job2_output")
 
+    job3_cmd = job_cmd(
+        job2_out,
+        job3_out,
+        "job3_mapper.py",
+        "job3_reducer.py",
+    )
     run_job(job3_cmd)
+    run_job(f"hdfs dfs -get {job3_out} ./job3_output")
 
     final_output = run_job_and_capture(f"hdfs dfs -cat {job3_out}/part-*")
     print(f"Final output:\n{final_output}")
-
-    run_job(f"hdfs dfs -get {job1_out} ./job1_output")
-    run_job(f"hdfs dfs -get {job2_out} ./job2_output")
-    run_job(f"hdfs dfs -get {job3_out} ./job3_output")
 
 
 if __name__ == "__main__":
